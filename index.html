@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Shopping list App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+    <script src="https://unpkg.com/vue"></script>
+</head>
+<body>
+    <div id="shopping-list">
+        <h1>{{ header ? header : 'Welcome' }}</h1>
+        <button v-if="state === 'default'" class="btn btn-primary" @click="changeState('edit')">Add Item</button>
+        <button v-else class="btn btn-cancel" @click="changeState('default')">Cancel</button>
+        <div v-if="state === 'edit'" class="add-item-form">
+            <input type="text" v-model="newItem" placeholder="Add an item" v-on:keyup.enter="addNewItem">
+            <p>{{ characterCount }}/200</p>
+            <button class="btn btn-primary" v-bind:disabled="newItem.length === 0" v-on:click="addNewItem" >Save</button>
+        </div>
+        <!--<a v-bind:href="newItem" target="_blank">Dynamic Link</a>-->
+        <ul>
+            <li v-for="item in reversedItems" :class="{strikeout: item.purchased}" @click="togglePurchase(item)">{{ item.label }}</li>
+            <!--<li v-for="item in items" :class="[item.purchased ? 'strikeout' : '', item.highPriority ? 'priority' : '']">{{ item.label }}</li>-->
+        </ul>
+        <p v-if="items.length === 0">You have no item in your list</p>
+    </div>
+    <script>
+        var shoppingList = new Vue({
+            el: '#shopping-list',
+
+            data: {
+                state: 'default',
+                header: 'Vue is ready to party',
+                newItem: '',
+                items: [
+                    { label: '10 party hats', purchased: false, highPriority: false },
+                    { label: '2 board games', purchased: true, highPriority: true },
+                    { label: '20 cups', purchased: false, highPriority: false },
+                ]
+            },
+
+            computed: {
+                characterCount() {
+                    return this.newItem.length
+                },
+
+                reversedItems() {
+                    return this.items.slice(0).reverse();
+                }
+            },
+
+            methods: {
+                addNewItem() {
+                    this.items.push({ label: this.newItem, purchased: false });
+                    this.newItem = '';
+                },
+
+                changeState(newState) {
+                    this.state = newState;
+                    this.newItem = '';
+                },
+
+                togglePurchase(item) {
+                    item.purchased = !item.purchased;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
